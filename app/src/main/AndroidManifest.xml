@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Apax - Personal Assistant Application
+    Device: Walmart 100011886 Tablet
+    Target OS: Android 11+ (API 30+)
+
+    SECURITY MODEL:
+    - All permissions are explicitly declared and user-approved
+    - No hidden APIs or security bypasses
+    - Follows Android security best practices
+    - All elevated access requires user consent
+    - Works within stock Android APIs (no root required)
+
+    ARCHITECTURE:
+    - MainActivity: UI and status display
+    - ApaxCoreService: Persistent foreground service
+    - ApaxAccessibilityService: User-authorized accessibility features
+    - Native Core: C++ reasoning engine (via JNI)
+
+    DEVICE COMPATIBILITY:
+    - Optimized for Walmart 100011886 tablet
+    - Screen: 1280x800 resolution
+    - CPU: ARM-based (arm64-v8a)
+    - Android 11+ (API 30+)
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- ============================================ -->
+    <!-- PERMISSIONS - All User-Approved             -->
+    <!-- ============================================ -->
+
+    <!-- Foreground Service Permission (Android 9.0+) -->
+    <!-- Required for persistent background operation with notification -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <!-- Foreground Service Type Permissions (Android 14+) -->
+    <!-- Required for dataSync foreground service type -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <!-- Required for camera foreground service type -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
+    <!-- Required for microphone foreground service type -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+
+    <!-- Post Notifications Permission (Android 13+) -->
+    <!-- Required to show foreground service notification -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Internet Permission -->
+    <!-- Future: For cloud sync, updates, or online features -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Wake Lock Permission -->
+    <!-- Future: For keeping device awake during critical tasks -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- Bind Accessibility Service Permission -->
+    <!-- Required for accessibility service - user must enable in Settings -->
+    <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE"
+        tools:ignore="ProtectedPermissions" />
+
+    <!-- ============================================ -->
+    <!-- CONTINUOUS I/O PERMISSIONS                  -->
+    <!-- ============================================ -->
+
+    <!-- Camera Permission -->
+    <!-- Required for continuous video capture and processing -->
+    <!-- User must grant at runtime (dangerous permission) -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+
+    <!-- Microphone Permission -->
+    <!-- Required for continuous audio input and processing -->
+    <!-- User must grant at runtime (dangerous permission) -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <!-- Storage Permissions (Scoped Storage - Android 11+) -->
+    <!-- For saving processed media if needed -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32"
+        tools:ignore="ScopedStorage" />
+
+    <!-- Media Permissions (Android 13+) -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+
+    <!-- Additional permissions to consider (all require user approval):
+         - ACCESS_FINE_LOCATION: For location-aware assistance
+         - READ_CONTACTS: For contact-based features
+         - READ_CALENDAR: For calendar integration
+         - READ_PHONE_STATE: For call-aware features
+
+         CONTINUOUS I/O PERMISSIONS (NOW IMPLEMENTED):
+         ✅ CAMERA: For continuous video capture and processing
+         ✅ RECORD_AUDIO: For continuous microphone input
+         ✅ Storage permissions: For media access (scoped storage)
+
+         WALMART 100011886 TABLET COMPATIBILITY:
+         - All permissions listed are supported on Android 11+
+         - Camera and microphone are runtime (dangerous) permissions
+         - User must explicitly grant these permissions
+         - No special tablet-specific permissions required
+         - Device Owner mode available via adb provisioning
+    -->
+
+    <!-- Tablet screen size support -->
+    <supports-screens
+        android:largeScreens="true"
+        android:xlargeScreens="true"
+        android:requiresSmallestWidthDp="600" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MyApplication">
+
+        <!-- ============================================ -->
+        <!-- MAIN ACTIVITY - App Entry Point             -->
+        <!-- ============================================ -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- ============================================ -->
+        <!-- APAX CORE SERVICE - Foreground Service      -->
+        <!-- ============================================ -->
+        <!--
+            This service runs persistently in the foreground.
+            - Requires visible notification (Android requirement)
+            - User can stop via notification or app settings
+            - Handles core Apax functionality
+        -->
+        <service
+            android:name=".services.ApaxCoreService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="dataSync">
+            <!-- foregroundServiceType options:
+                 - dataSync: For data synchronization
+                 - mediaPlayback: For media features
+                 - location: For location tracking
+                 - connectedDevice: For device connections
+                 Choose appropriate type based on actual usage
+            -->
+        </service>
+
+        <!-- ============================================ -->
+        <!-- CONTINUOUS I/O SERVICES                     -->
+        <!-- ============================================ -->
+
+        <!-- Camera Service - Continuous Video Capture -->
+        <service
+            android:name=".services.ApaxCameraService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="camera">
+            <!-- Requires CAMERA permission (user-granted)
+                 Processes video frames via native core
+                 Runs as foreground service with notification
+            -->
+        </service>
+
+        <!-- Audio Service - Continuous Microphone Input -->
+        <service
+            android:name=".services.ApaxAudioService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="microphone">
+            <!-- Requires RECORD_AUDIO permission (user-granted)
+                 Processes audio data via native core
+                 Runs as foreground service with notification
+            -->
+        </service>
+
+        <!-- ============================================ -->
+        <!-- ACCESSIBILITY SERVICE - User-Authorized     -->
+        <!-- ============================================ -->
+        <!--
+            This service provides accessibility features.
+            - Requires EXPLICIT user authorization via Settings
+            - Cannot be enabled programmatically
+            - User must navigate to Settings > Accessibility
+            - User can disable at any time
+            - All capabilities declared in accessibility_service_config.xml
+        -->
+        <service
+            android:name=".services.ApaxAccessibilityService"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
+        <!-- ============================================ -->
+        <!-- DEVICE ADMIN RECEIVER - Optional            -->
+        <!-- ============================================ -->
+        <!--
+            Uncomment this section if implementing Device Owner features.
+
+            IMPORTANT SECURITY NOTES FOR WALMART 100011886 TABLET:
+            - Device Owner can only be set via adb or NFC provisioning
+            - Requires factory reset or special setup
+            - Cannot be set programmatically by the app
+            - User must explicitly provision device
+            - Provides elevated privileges for enterprise/personal management
+
+            PROVISIONING COMMAND (via adb):
+            adb shell dpm set-device-owner com.apax.core/.admin.ApaxDeviceAdminReceiver
+
+            REQUIREMENTS:
+            - Tablet must be factory reset (no accounts added)
+            - USB debugging enabled
+            - No other device owner set
+            - Android 11+ supports this feature
+
+            This is NOT a security bypass - it's a legitimate Android feature
+            for device management when properly provisioned on your personal device.
+        -->
+        <!--
+        <receiver
+            android:name=".admin.ApaxDeviceAdminReceiver"
+            android:permission="android.permission.BIND_DEVICE_ADMIN"
+            android:exported="true">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin_config" />
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+            </intent-filter>
+        </receiver>
+        -->
+
+    </application>
+
+</manifest>

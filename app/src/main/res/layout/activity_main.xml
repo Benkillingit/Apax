@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Apax Main Activity Layout
+    Device: Walmart 100011886 Tablet
+    Screen: 1280x800 (WXGA) - Landscape optimized
+    Density: ~160dpi (mdpi to hdpi range)
+
+    DESIGN NOTES:
+    - Optimized for 10-inch tablet display
+    - Touch targets sized for tablet interaction (min 48dp)
+    - Text sizes scaled for comfortable reading at tablet distance
+    - Padding and margins adjusted for larger screen
+-->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp"
+    tools:context=".MainActivity">
+
+    <!-- App Title - Scaled for tablet -->
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:textSize="40sp"
+        android:textStyle="bold"
+        android:textColor="?attr/colorPrimary"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp" />
+
+    <!-- Version Info - Larger for tablet readability -->
+    <TextView
+        android:id="@+id/tv_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Native Core Version: Loading..."
+        android:textSize="14sp"
+        android:textColor="?android:attr/textColorSecondary"
+        app:layout_constraintTop_toBottomOf="@id/tv_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp" />
+
+    <!-- Device Info - Shows tablet model -->
+    <TextView
+        android:id="@+id/tv_device_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Walmart 100011886 Tablet Edition"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        android:textColor="?android:attr/textColorTertiary"
+        app:layout_constraintTop_toBottomOf="@id/tv_version"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="4dp" />
+
+    <!-- Service Status -->
+    <TextView
+        android:id="@+id/tv_service_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Camera: STOPPED | Audio: STOPPED"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="?attr/colorPrimary"
+        app:layout_constraintTop_toBottomOf="@id/tv_device_info"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="12dp" />
+
+    <!-- Status Display (Scrollable) - Optimized for tablet screen -->
+    <ScrollView
+        android:id="@+id/scroll_status"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="12dp"
+        app:layout_constraintTop_toBottomOf="@id/tv_service_status"
+        app:layout_constraintBottom_toTopOf="@id/scroll_continuous_output"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.25">
+
+        <TextView
+            android:id="@+id/tv_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/status_initializing"
+            android:textSize="14sp"
+            android:fontFamily="monospace"
+            android:padding="12dp"
+            android:background="?attr/selectableItemBackground"
+            android:textColor="?android:attr/textColorPrimary"
+            android:lineSpacingExtra="2dp" />
+    </ScrollView>
+
+    <!-- Continuous Output Display - Shows real-time processing results -->
+    <ScrollView
+        android:id="@+id/scroll_continuous_output"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="12dp"
+        app:layout_constraintTop_toBottomOf="@id/scroll_status"
+        app:layout_constraintBottom_toTopOf="@id/btn_start_camera"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.25">
+
+        <TextView
+            android:id="@+id/tv_continuous_output"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Continuous I/O Output:\nWaiting for input..."
+            android:textSize="14sp"
+            android:fontFamily="monospace"
+            android:padding="12dp"
+            android:background="?attr/selectableItemBackground"
+            android:textColor="?android:attr/textColorPrimary"
+            android:lineSpacingExtra="2dp" />
+    </ScrollView>
+
+    <!-- Camera Control Buttons Row -->
+    <Button
+        android:id="@+id/btn_start_camera"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:text="Start Camera"
+        android:textSize="14sp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@id/btn_start_audio"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_stop_camera"
+        app:layout_constraintWidth_percent="0.48" />
+
+    <Button
+        android:id="@+id/btn_stop_camera"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:text="Stop Camera"
+        android:textSize="14sp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@id/btn_stop_audio"
+        app:layout_constraintStart_toEndOf="@id/btn_start_camera"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_percent="0.48" />
+
+    <!-- Audio Control Buttons Row -->
+    <Button
+        android:id="@+id/btn_start_audio"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:text="Start Audio"
+        android:textSize="14sp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@id/btn_refresh"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_stop_audio"
+        app:layout_constraintWidth_percent="0.48" />
+
+    <Button
+        android:id="@+id/btn_stop_audio"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:text="Stop Audio"
+        android:textSize="14sp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@id/btn_initialize"
+        app:layout_constraintStart_toEndOf="@id/btn_start_audio"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_percent="0.48" />
+
+    <!-- Refresh Button - Tablet-sized touch target -->
+    <Button
+        android:id="@+id/btn_refresh"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:text="Refresh Status"
+        android:textSize="14sp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_initialize"
+        app:layout_constraintWidth_percent="0.48" />
+
+    <!-- Initialize Button - Tablet-sized touch target -->
+    <Button
+        android:id="@+id/btn_initialize"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:text="Initialize Core"
+        android:textSize="14sp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btn_refresh"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_percent="0.48" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

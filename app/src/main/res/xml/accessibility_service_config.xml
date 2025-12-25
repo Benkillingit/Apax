@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Apax Accessibility Service Configuration
+
+    This file declares the capabilities and behavior of the accessibility service.
+    All capabilities must be declared here for transparency and user consent.
+
+    SECURITY:
+    - User must explicitly enable this service in Settings
+    - Cannot be enabled programmatically
+    - User can disable at any time
+    - All capabilities are visible to user before enabling
+
+    COMPLIANCE:
+    - Follows Android Accessibility Service guidelines
+    - Declares all event types and capabilities
+    - Provides clear description to user
+-->
+<accessibility-service
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/accessibility_service_description"
+    android:accessibilityEventTypes="typeViewClicked|typeViewFocused|typeWindowStateChanged"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:accessibilityFlags="flagDefault"
+    android:canRetrieveWindowContent="true"
+    android:notificationTimeout="100"
+    android:settingsActivity="com.apax.core.MainActivity" />

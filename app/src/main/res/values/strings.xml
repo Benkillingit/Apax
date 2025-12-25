@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Apax</string>
+
+    <!-- Service descriptions -->
+    <string name="apax_service_name">Apax Core Service</string>
+    <string name="apax_service_description">Apax personal assistant core service</string>
+    <string name="apax_notification_channel_name">Apax Service</string>
+    <string name="apax_notification_channel_description">Persistent notification for Apax service</string>
+
+    <!-- Accessibility Service -->
+    <string name="accessibility_service_name">Apax Accessibility Service</string>
+    <string name="accessibility_service_description">Allows Apax to assist with device interactions when explicitly authorized by the user</string>
+
+    <!-- Status messages -->
+    <string name="status_initializing">Initializing Apax Core…</string>
+    <string name="status_ready">Apax Ready</string>
+    <string name="status_error">Error initializing Apax</string>
+
+    <!-- Continuous I/O -->
+    <string name="continuous_io_waiting">Continuous I/O Output:\nWaiting for input…</string>
+    <string name="camera_service_name">Apax Camera Service</string>
+    <string name="audio_service_name">Apax Audio Service</string>
+</resources>
