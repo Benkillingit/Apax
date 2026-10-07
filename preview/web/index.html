@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<!--
+    Apax browser preview - mirrors app/src/main/res/layout/activity_main.xml
+
+    The Apax app itself is a native Android app (Java UI + C++/JNI core); an APK
+    cannot render in a browser. This page reproduces MainActivity's UI and drives
+    the app's REAL native core, compiled to WebAssembly from
+    app/src/main/cpp/apax_core.cpp.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The app uses Theme.MaterialComponents.DayNight (values/ and values-night/
+     themes.xml). Declaring both schemes stops the browser's auto-dark from
+     mangling the palette; the CSS mirrors each theme explicitly. -->
+<meta name="color-scheme" content="light dark">
+<title>Apax</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    /* values/themes.xml: colorPrimary = purple_500 */
+    --purple-500: #6200EE;
+    --purple-700: #3700B3;
+    --teal-200: #03DAC5;
+    --on-primary: #FFFFFF;
+    --surface: #FFFFFF;
+    --on-surface: #1C1B1F;
+    --on-surface-secondary: #49454F;
+    --on-surface-tertiary: #79747E;
+    --panel: #F4F1F9;
+  }
+
+  /* values-night/themes.xml: colorPrimary = purple_200, colorOnPrimary = black */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --purple-500: #BB86FC;
+      --teal-200: #03DAC5;
+      --on-primary: #000000;
+      --surface: #121212;
+      --on-surface: #E6E1E5;
+      --on-surface-secondary: #CAC4D0;
+      --on-surface-tertiary: #938F99;
+      --panel: #1E1B22;
+    }
+
+    button:hover,
+    button:active { background: #D0BCFF; }
+    button:disabled { background: #4A4458; color: #938F99; }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 24px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: var(--surface);
+    color: var(--on-surface);
+    font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
+    /* Tablet layout: 48dp touch targets, generous spacing */
+  }
+
+  .title {
+    margin: 24px 0 0;
+    font-size: 40px;
+    font-weight: 700;
+    text-align: center;
+    color: var(--purple-500);
+  }
+
+  .version {
+    margin: 8px 0 0;
+    font-size: 14px;
+    text-align: center;
+    color: var(--on-surface-secondary);
+  }
+
+  .device-info {
+    margin: 4px 0 0;
+    font-size: 12px;
+    font-style: italic;
+    text-align: center;
+    color: var(--on-surface-tertiary);
+  }
+
+  .service-status {
+    margin: 12px 0 0;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    color: var(--purple-500);
+  }
+
+  /* The two monospace readouts (tv_status / tv_continuous_output) */
+  .panel {
+    flex: 1 1 0;
+    min-height: 140px;
+    overflow: auto;
+    margin: 0;
+    padding: 12px;
+    border: 1px solid var(--on-surface-tertiary);
+    border-radius: 4px;
+    background: var(--panel);
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    color: var(--on-surface);
+  }
+
+  .buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 8px;
+    margin-top: 4px;
+  }
+
+  button {
+    min-height: 56px;
+    padding: 0 16px;
+    border: none;
+    border-radius: 4px;
+    background: var(--purple-500);
+    color: var(--on-primary);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+  }
+
+  button:hover { background: var(--purple-700); }
+  button:active { background: var(--purple-700); }
+  button:disabled { background: #CAC4D0; cursor: default; }
+
+  .footnote {
+    margin: 0;
+    font-size: 12px;
+    text-align: center;
+    color: var(--on-surface-tertiary);
+  }
+</style>
+</head>
+<body>
+  <h1 class="title">Apax</h1>
+  <p class="version" id="tv_version">Native Core Version: Loading...</p>
+  <p class="device-info">Walmart 100011886 Tablet Edition</p>
+  <p class="service-status" id="tv_service_status">Camera: STOPPED | Audio: STOPPED</p>
+
+  <pre class="panel" id="tv_status">Initializing Apax Core…</pre>
+  <pre class="panel" id="tv_continuous_output">Continuous I/O Output:
+Waiting for input…</pre>
+
+  <div class="buttons">
+    <button id="btn_start_camera">Start Camera</button>
+    <button id="btn_stop_camera">Stop Camera</button>
+    <button id="btn_start_audio">Start Audio</button>
+    <button id="btn_stop_audio">Stop Audio</button>
+    <button id="btn_refresh">Refresh Status</button>
+    <button id="btn_initialize">Initialize Core</button>
+  </div>
+
+  <p class="footnote" id="footnote">Loading native core…</p>
+
+  <script src="./app.js"></script>
+  <script src="./apax_core.js"></script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+# Base44 sandbox stack for the Apax Android app.
+#
+# The app itself is native Android (Java UI + C++/JNI core) and cannot run in a
+# browser, so this stack runs its real native core (app/src/main/cpp/apax_core.cpp)
+# as WebAssembly and serves the preview on port 3000.
+#
+# Start:  docker compose -f docker-compose.base44.yml up -d --build
+# Logs:   docker compose -f docker-compose.base44.yml logs -f preview
+#
+# Run from the cloned source: the repo is bind-mounted, and the WebAssembly
+# bundle is rebuilt from the mounted C++ on every container start.
+
+services:
+  preview:
+    build:
+      context: .
+      dockerfile: preview/Dockerfile
+    working_dir: /src
+    volumes:
+      - .:/src
+    ports:
+      - "3000:3000"
+    environment:
+      # Consumed by the platform; services must receive it as a bare entry.
+      - BASE44_PREVIEW_MODE
+      # Compiled WebAssembly lives outside the repo.
+      - APAX_WASM_DIR=/tmp/apax-web
+    command:
+      - sh
+      - -ec
+      - |
+        mkdir -p "$$APAX_WASM_DIR"
+        # Compile the app's real native core to WebAssembly.
+        # A minimal <android/log.h> shim is supplied on the include path, so
+        # app/src/main/cpp/apax_core.cpp builds unchanged for the browser.
+        emcc -O2 -std=c++17 \
+          -I app/src/main/cpp \
+          -I preview/wasm/android_log_shim \
+          app/src/main/cpp/apax_core.cpp preview/wasm/apax_web.cpp \
+          -o "$$APAX_WASM_DIR/apax_core.js" \
+          -sEXPORTED_FUNCTIONS=_malloc,_free,_apaxInitialize,_apaxVersion,_apaxStatusString,_apaxContinuousOutput,_apaxProcessAudioData,_apaxProcessVideoFrame \
+          -sEXPORTED_RUNTIME_METHODS=ccall \
+          -sALLOW_MEMORY_GROWTH=1 \
+          -sENVIRONMENT=web
+        exec node preview/server.js
+    healthcheck:
+      # Probes the served page and the compiled core bundle.
+      test:
+        - CMD-SHELL
+        - curl -fsS -o /dev/null http://127.0.0.1:3000/ && curl -fsS -o /dev/null http://127.0.0.1:3000/apax_core.wasm
+      interval: 10s
+      timeout: 5s
+      start_period: 40s
+      retries: 5
+    restart: on-failure
